@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fancy Calculator</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;700&display=swap');
+
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(45deg, #ff7f7f, #7f7fff, #7fff7f);
+            background-size: 600% 600%;
+            animation: rainbow-bg 10s ease infinite;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        @keyframes rainbow-bg {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .calculator-container {
+            text-align: center;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            border-radius: 20px;
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.5);
+            color: #fff;
+        }
+
+        #time, #date {
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+            animation: text-glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes text-glow {
+            from { text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.4); }
+            to { text-shadow: 2px 2px 10px rgba(255, 255, 255, 0.8); }
+        }
+
+        .calculator {
+            display: grid;
+            grid-template-columns: repeat(4, 60px);
+            grid-template-rows: repeat(5, 60px);
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .calculator button, #display {
+            width: 100%;
+            height: 100%;
+            font-size: 1.5em;
+            border-radius: 10px;
+            border: none;
+            outline: none;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            transition: background-color 0.2s ease, transform 0.2s ease;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .calculator button:hover {
+            background-color: rgba(255, 255, 255, 0.4);
+            transform: scale(1.05);
+        }
+
+        #display {
+            grid-column: span 4;
+            text-align: right;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            font-weight: 700;
+            animation: display-glow 5s ease-in-out infinite alternate;
+        }
+
+        @keyframes display-glow {
+            from { box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 255, 255, 0.5); }
+            to { box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3), 0 0 40px rgba(255, 255, 255, 0.8); }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="calculator-container">
+        <div id="time"></div>
+        <div id="date"></div>
+        <div id="display">0</div>
+        <div class="calculator">
+            <button data-key="7">7</button>
+            <button data-key="8">8</button>
+            <button data-key="9">9</button>
+            <button data-key="/">/</button>
+            <button data-key="4">4</button>
+            <button data-key="5">5</button>
+            <button data-key="6">6</button>
+            <button data-key="*">*</button>
+            <button data-key="1">1</button>
+            <button data-key="2">2</button>
+            <button data-key="3">3</button>
+            <button data-key="-">-</button>
+            <button data-key="0">0</button>
+            <button data-key=".">.</button>
+            <button data-key="=">=</button>
+            <button data-key="+">+</button>
+            <button data-key="C">C</button>
+        </div>
+    </div>
+
+    <script>
+        const display = document.getElementById('display');
+        const buttons = document.querySelectorAll('.calculator button');
+        let currentValue = '';
+
+        function updateDisplay() {
+            display.textContent = currentValue || '0';
+        }
+
+        function calculate() {
+            try {
+                currentValue = eval(currentValue).toString();
+            } catch (e) {
+                currentValue = 'Error';
+            }
+            updateDisplay();
+        }
+
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                const key = button.getAttribute('data-key');
+                if (key === 'C') {
+                    currentValue = '';
+                } else if (key === '=') {
+                    calculate();
+                } else {
+                    currentValue += key;
+                }
+                updateDisplay();
+            });
+        });
+
+        document.addEventListener('keydown', (e) => {
+            const key = e.key;
+            if (key === 'Enter') {
+                calculate();
+            } else if (key === 'Backspace') {
+                currentValue = currentValue.slice(0, -1);
+                updateDisplay();
+            } else if ('0123456789+-*/.'.includes(key)) {
+                currentValue += key;
+                updateDisplay();
+            } else if (key === 'Escape') {
+                currentValue = '';
+                updateDisplay();
+            }
+        });
+
+        function updateTime() {
+            const now = new Date();
+            const time = now.toLocaleTimeString();
+            const date = now.toLocaleDateString();
+            document.getElementById('time').textContent = time;
+            document.getElementById('date').textContent = date;
+        }
+
+        setInterval(updateTime, 1000);
+        updateTime();
+    </script>
+</body>
+
+</html>
